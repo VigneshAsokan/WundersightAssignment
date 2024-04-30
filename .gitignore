@@ -1,0 +1,9 @@
+﻿.vs
+Builds
+Library
+Logs
+obj
+Temp
+*.vsconfig
+*.csproj
+WundrsightAssignment.sln
