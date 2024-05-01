@@ -5,6 +5,11 @@ TagManager:
   serializedVersion: 2
   tags:
   - Target
+  - Controller
+  - Bow
+  - Arrow
+  - Debug
+  - BowString
   layers:
   - Default
   - TransparentFX
