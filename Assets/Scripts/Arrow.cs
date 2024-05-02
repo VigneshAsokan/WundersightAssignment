@@ -1,8 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 public class Arrow : MonoBehaviour
 {
@@ -10,21 +6,18 @@ public class Arrow : MonoBehaviour
     public bool IsSnappedToBow { get; private set; }
     private Rigidbody _rb;
     private BoxCollider _collider;
-    private TextMeshProUGUI _debugText;
     private OVRControllerHelper _controller;
-    private float _force = 1500f;
+    private float _force = 1000f;
 
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
         _collider = GetComponent<BoxCollider>();
-        _debugText = GameObject.FindGameObjectWithTag("Debug").GetComponent<TextMeshProUGUI>();
     }
     private void Update()
     {
         if (_controller != null && OVRInput.GetUp(OVRInput.Button.PrimaryIndexTrigger, _controller.m_controller) && IsGrabbed)
         {
-            _debugText.text = "Arrow Dropped!!";
             SetArrowGrabbed(false);
         }
     }
@@ -57,7 +50,6 @@ public class Arrow : MonoBehaviour
 
     public void SnapArrowToBow(Bow bow)
     {
-        _debugText.text = "Arrow Snapped to Bow!!";
         transform.SetParent(bow.ArrowAnchor, false);
         transform.localPosition = Vector3.zero;
         transform.localRotation = Quaternion.Euler(Vector3.zero);

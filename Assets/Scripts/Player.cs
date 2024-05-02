@@ -1,20 +1,32 @@
 using TMPro;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class Player : MonoBehaviour
 {
     public float PlayerSpeed;
     private Rigidbody _rb;
     private int _fps;
+    private int _score;
 
     [SerializeField] private TextMeshProUGUI _fpsText;
+    [SerializeField] private TextMeshProUGUI _scoreText;
+    [SerializeField] private OVRCameraRig _cameraRig;
     private float _hudRefreshRate = 1f;
     private float _timer = 0;
+
+    public delegate void ScoreUpdateAction(int value);
+    public ScoreUpdateAction OnScoreUpdated;
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
+        OnScoreUpdated = UpdateScore;
     }
 
+    private void UpdateScore(int value)
+    {
+        _score += value;
+        _scoreText.text = "Score: " + _score.ToString();
+    }
     private void Update()
     {
         if (Time.unscaledTime > _timer)
@@ -27,7 +39,7 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate()
     {
         Vector2 moveAxis = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick, OVRInput.Controller.LTouch);
-        _rb.velocity =  new Vector3(moveAxis.x, 0, moveAxis.y) * Time.deltaTime * PlayerSpeed;
+        _rb.velocity = (transform.right * moveAxis.x + transform.forward * moveAxis.y) * Time.deltaTime * PlayerSpeed;
 
 
         float rotateY = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick, OVRInput.Controller.RTouch).x;

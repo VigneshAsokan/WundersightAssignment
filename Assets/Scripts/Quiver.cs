@@ -1,12 +1,10 @@
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 public class Quiver : MonoBehaviour
 {
     [SerializeField] private Arrow _arrowPrefab;
     [SerializeField] private int _arrowCount = 10;
-    [SerializeField] private TextMeshProUGUI _debugText;
     private bool _isControllerInside = false;
     private bool _arrowGrabbed = false;
     [SerializeField] private OVRControllerHelper _controller;
@@ -39,7 +37,6 @@ public class Quiver : MonoBehaviour
     }
     private void GrabNextArrow()
     {
-        _debugText.text = "arrow Grabbed!!";
         Arrow arrow = _arrowsPool[_arrowPoolIdx];
         arrow.SetArrowGrabbed(true, _controller);
         _arrowPoolIdx++;
@@ -53,21 +50,17 @@ public class Quiver : MonoBehaviour
     {
         if(collider.CompareTag("Controller"))
         {
-            Debug.Log("Controller Inside");
             _controller = collider.GetComponent<OVRControllerHelper>();
             _isControllerInside = true;
             _arrowGrabbed = false;
-            _debugText.text = "Controller inside Trigger!!";
         }
     }
     private void OnTriggerExit(Collider collider)
     {
         if (collider.CompareTag("Controller"))
         {
-            Debug.Log("Controller Inside");
             _controller = null;
             _isControllerInside = false;
-            _debugText.text = "Controller outside Trigger!!";
         }
     }
 }
