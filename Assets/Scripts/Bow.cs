@@ -4,49 +4,50 @@ using UnityEngine;
 public class Bow : MonoBehaviour
 {
     public Transform ArrowAnchor;
-    [SerializeField]private TextMeshProUGUI _debugText;
-    [SerializeField]private Transform _stringMiddleBone;
-    [SerializeField]private Transform _stringHolder;
+    [SerializeField] public TextMeshProUGUI DebugText;
+    [SerializeField] private Transform _stringMiddleBone;
+    [SerializeField] private Transform _stringHolder;
+    [SerializeField] private Rigidbody _stringRb;
 
-    private Arrow _currentAttachedArrow;
-    private float stringForce;
-    private OVRControllerHelper _controllerinBound;
-    private float _minZ = -0.5f;
-    private float _maxZ = 0f;
+    public Arrow CurrentAttachedArrow { get; private set; }
+    private float _stringForceMultiplier = 0.2f;
+    private float _defaultForce = 1500f;
 
+    public OVRControllerHelper ControllerinBound;
+    public bool StringPulled { get; private set; }
+    private float _initZposition = 0;
     public void ArrowAttached(Arrow arrow)
     {
-        _currentAttachedArrow = arrow;  
-        _stringHolder.gameObject.SetActive(true);
+        CurrentAttachedArrow = arrow;  
+        _stringHolder.gameObject.SetActive(true);   
     }
     private void Update()
     {
-        if (_controllerinBound != null && OVRInput.Get(OVRInput.Button.PrimaryIndexTrigger, _controllerinBound.m_controller)) 
+        if (ControllerinBound != null && OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger, ControllerinBound.m_controller)) 
         {
-            _debugText.text = "Controller Grabbing String!!";
+            StringPulled = true;
+            _initZposition = ControllerinBound.transform.position.z;
+            DebugText.text = "String Pulled Down init" + _initZposition;
         }
-    }
-
-    private void OnTriggerEnter(Collider collider)
-    {
-        if (collider.CompareTag("Controller"))
+        if(StringPulled)
         {
-            _debugText.text = "Controller Touching String!!";
-            if (collider.GetComponentInChildren<Arrow>() != null)
+            if(OVRInput.Get(OVRInput.Button.PrimaryIndexTrigger, ControllerinBound.m_controller))
             {
-                collider.GetComponentInChildren<Arrow>().SnapArrowToBow(this);
+                float difY = -0.5f - (ControllerinBound.transform.position.z - _initZposition);
+                DebugText.text = "String Pulled Down DifY: " + difY;
+                difY = Mathf.Clamp(difY, -0.5f, -0.1f);
+                _stringMiddleBone.transform.localPosition = new Vector3(0f, difY, 0f);
+                _stringForceMultiplier =  0.25f/difY;
             }
-            else if(_currentAttachedArrow != null)
+            else
             {
-                _controllerinBound = collider.GetComponent<OVRControllerHelper>();
+                DebugText.text = "String let go with force" + _stringForceMultiplier;
+                _stringMiddleBone.localPosition = new Vector3(0, -0.5f, 0);
+                CurrentAttachedArrow?.FireArrow(_stringForceMultiplier);
+                CurrentAttachedArrow = null;
+                ControllerinBound = null;
+                StringPulled = false;
             }
-        }
-    }
-    private void OnTriggerExit(Collider collider)
-    {
-        if (collider.CompareTag("Controller"))
-        {
-            _controllerinBound = null;
         }
     }
 }

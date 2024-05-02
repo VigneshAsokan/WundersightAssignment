@@ -12,7 +12,7 @@ public class Arrow : MonoBehaviour
     private BoxCollider _collider;
     private TextMeshProUGUI _debugText;
     private OVRControllerHelper _controller;
-    private float _force = 1000f;
+    private float _force = 1500f;
 
     private void Awake()
     {
@@ -28,10 +28,10 @@ public class Arrow : MonoBehaviour
             SetArrowGrabbed(false);
         }
     }
-    public void FireArrow(float stringforce = 1)
+    public void FireArrow(float stringforce = -0.25f)
     {
         SetArrowGrabbed(false);
-        _rb.AddForce(-transform.up * stringforce * _force, ForceMode.Force);
+        _rb.AddForce(transform.up * stringforce * _force, ForceMode.Force);
     }
     public void SetArrowGrabbed(bool value, OVRControllerHelper controller = null)
     {
@@ -62,6 +62,7 @@ public class Arrow : MonoBehaviour
         transform.localPosition = Vector3.zero;
         transform.localRotation = Quaternion.Euler(Vector3.zero);
         IsSnappedToBow = true;
+        IsGrabbed = false;
         bow.ArrowAttached(this);
     }
 }
